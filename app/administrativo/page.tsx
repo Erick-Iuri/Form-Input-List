@@ -4,13 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function Adm() {
-  /* Grava o pedido */
-  const [pedido01, setPedido01] = useState("");
-
-  /* deleta o pedido */
-  function deletaPedido() {
-    setPedido01("");
-  };
 
   return (
     <div>

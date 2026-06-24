@@ -2,21 +2,33 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { ChangeEvent } from "react";
 /* Importa Proops */
-import Adm from "./administrativo/page";
 
 export default function Home() {
-  /* Captura as informações */
-  const [nomeResponsavel, setNomeResponsavel] = useState("");
-
-  /* Transforma dados em Pedidos */
-  function salvarDados() {
-    console.log(nomeResponsavel);
-  }
   
-  /* Limpa Variaveis */
-  function limparState() {
-    setNomeResponsavel("");
+  /* Objeto */
+  const [pedidoEPI, setPedidoEPI] = useState({
+    nome: "",
+    faciais: "",
+    facial_qtde: 0,
+  });
+
+  /* função altera objeto */
+
+  function mudarPedido(
+    evento: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) {
+    const { name, value } = evento.target;
+
+    setPedidoEPI({
+      ...pedidoEPI,
+      [name]: value,
+    });
+  }
+
+  function teste() {
+    console.log(pedidoEPI);
   }
 
   return (
@@ -43,6 +55,7 @@ export default function Home() {
             </div>
           </Link>
         </div>
+
         {/* Conteúdo */}
         <div className="flex justify-center max-w-360 mx-auto">
           {/* Formulario */}
@@ -65,8 +78,9 @@ export default function Home() {
 
                 {/* input nome do Solicitante */}
                 <input
-                  value={nomeResponsavel}
-                  onChange={(e) => setNomeResponsavel(e.target.value)}
+                  name="nome"
+                  value={pedidoEPI.nome}
+                  onChange={mudarPedido}
                   type="text"
                   placeholder="Exemplo: Alex Pereira"
                   className="w-full mb-5 bg-[#F1F3F4] text-gray-800 placeholder-gray-500 rounded-sm px-4 py-3 border border-transparent focus:border-purple-700 focus:bg-white outline-none transition-all duration-200"
@@ -95,7 +109,12 @@ export default function Home() {
                       </label>
 
                       <div>
-                        <select className="w-full bg-white placeholder-gray-500 rounded-sm px-4 py-3 border border-transparent focus:border-purple-700 focus:bg-white outline-none transition-all duration-200 cursor-pointer">
+                        <select
+                          name="faciais"
+                          value={pedidoEPI.faciais}
+                          onChange={mudarPedido}
+                          className="w-full bg-white placeholder-gray-500 rounded-sm px-4 py-3 border border-transparent focus:border-purple-700 focus:bg-white outline-none transition-all duration-200 cursor-pointer"
+                        >
                           <option value="" disabled hidden>
                             Exemplo: Capacetes
                           </option>
@@ -115,6 +134,9 @@ export default function Home() {
                         <span className="text-red-500">*</span>
                       </label>
                       <input
+                        name="facial_qtde"
+                        value={pedidoEPI.facial_qtde}
+                        onChange={mudarPedido}
                         type="number"
                         placeholder="20"
                         className="w-full bg-white placeholder-gray-500 rounded-sm px-4 py-3 border border-transparent focus:border-purple-700 focus:bg-white outline-none transition-all duration-200"
@@ -137,14 +159,12 @@ export default function Home() {
               </div>
               {/* botão de enviar e cancelar */}
               <div className="flex justify-end p-4 gap-3">
-                <button 
-                onClick={limparState}
-                className="px-10 py-3 cursor-pointer rounded-sm font-bold hover:bg-red-800 active:bg-red-400 bg-[#E82A25] text-white">
+                <button className="px-10 py-3 cursor-pointer rounded-sm font-bold hover:bg-red-800 active:bg-red-400 bg-[#E82A25] text-white">
                   Cancelar Pedido
                 </button>
 
                 <button
-                  onClick={salvarDados}
+                  onClick={teste}
                   className="px-20 py-3 cursor-pointer rounded-sm font-bold hover:bg-blue-800 active:bg-blue-400 bg-[#0C5EFF] text-white"
                 >
                   Concluir
