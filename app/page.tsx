@@ -1,12 +1,10 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { ChangeEvent } from "react";
+import { useState, ChangeEvent } from "react";
 /* Importa Proops */
 
 export default function Home() {
-  
   /* Objeto */
   const [pedidoEPI, setPedidoEPI] = useState({
     nome: "",
@@ -27,8 +25,16 @@ export default function Home() {
     });
   }
 
-  function teste() {
-    console.log(pedidoEPI);
+  async function enviarParaOBanco() {
+    // Dispara o objeto para a nossa API local
+    await fetch("/api/pedidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pedidoEPI),
+    });
+
+    alert("Enviado para o Banco de Dados Local!");
+    setPedidoEPI({ nome: "", faciais: "", facial_qtde: 0 }); // Limpa o formulário
   }
 
   return (
@@ -43,7 +49,7 @@ export default function Home() {
           {/* titulo */}
           <div>Formularios e pedidos</div>
           {/* Icone */}
-          <Link href="./administrativo">
+          <Link href={{ pathname: "/administrativo" }}>
             <div className="flex justify-center items-center h-full">
               <Image
                 src="/folderIcon.png"
@@ -164,7 +170,7 @@ export default function Home() {
                 </button>
 
                 <button
-                  onClick={teste}
+                  onClick={enviarParaOBanco}
                   className="px-20 py-3 cursor-pointer rounded-sm font-bold hover:bg-blue-800 active:bg-blue-400 bg-[#0C5EFF] text-white"
                 >
                   Concluir

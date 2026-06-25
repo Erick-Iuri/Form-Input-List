@@ -1,9 +1,48 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+// 1. Criamos a fôrma do pedido para o TypeScript ficar feliz
+type Pedido = {
+  nome: string;
+  idade?: string | number; // o ? significa que é opcional
+};
 
 export default function Adm() {
+   const [listaDePedidos, setListaDePedidos] = useState<Pedido[]>([]);
+
+  // 1. FUNÇÃO PURE: Ela apenas busca os dados e atualiza o estado
+  async function carregarDados() {
+    try {
+      const resposta = await fetch("/api/pedidos", { cache: "no-store" });
+      const dados = await resposta.json();
+      setListaDePedidos(dados);
+    } catch (erro) {
+      console.error("Erro ao carregar dados:", erro);
+    }
+  }
+
+  // 2. O useEffect CHAMA A FUNÇÃO DIRETAMENTE
+  // Deixando os colchetes vazios [] o React sabe que é para rodar SÓ UMA VEZ ao abrir a página
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    carregarDados();
+  }, []);
+
+  /* deleta coisas */
+  async function deletaArquivo(indexParaDeletar: number) {
+    const resposta = await fetch("/api/pedidos", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ index: indexParaDeletar }), 
+    });
+
+    if (resposta.ok) {
+      // Agora ele vai encontrar a função perfeitamente aqui!
+      carregarDados();
+    }
+  }
 
   return (
     <div>
@@ -37,27 +76,33 @@ export default function Adm() {
               {/* titulo formulario */}
               <div className="p-5">
                 <p className="text-xl font-bold pb-3">Solicitações</p>
-                <p className="text-md">Aqui estão todos os pedidos.</p>
+                <p className="text-md text-gray-600">Aqui estão todos os pedidos.</p>
               </div>
               {/* Todos os pedidos */}
-              <div className="flex gap-1 p-5">
-                <p className="text-md">Pedido feito por:</p>
-                <p className="font-bold">Alex Pereira</p>
-              </div>
-
-              <div className="flex gap-2 px-5">
-                <p
-                  className="cursor-pointer rounded-sm hover:bg-gray-200
-                text-md bg-[#F1F3F4] p-3 w-6/7"
-                >
-                  Visualizar PDF
-                </p>
-                <button
-                  className="cursor-pointer rounded-sm
-                text-md bg-[#E82A25] text-white w-1/7"
-                >
-                  Deletar
-                </button>
+              <div className="flex gap-1 p-5 text-gray-800">
+                {listaDePedidos.length === 0 ? (
+                  <p className="text-gray-500">Nenhum pedido feito ainda...</p>
+                ) : (
+                  <div className="space-y-3 w-full">
+                    {listaDePedidos.map((pedidoEPI, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center p-4 bg-white rounded-lg shadow border border-gray-200"
+                      >
+                        <p>
+                          <strong>Pedido feito por:</strong> {pedidoEPI.nome}
+                        </p>
+                        <button
+                          // 4. MUDANÇA: Nome da função corrigido para 'deletaArquivo'
+                          onClick={() => deletaArquivo(index)}
+                          className="cursor-pointer rounded-sm text-md bg-[#E82A25] hover:bg-red-700 text-white w-30 p-2 font-bold text-center transition"
+                        >
+                          Deletar
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
